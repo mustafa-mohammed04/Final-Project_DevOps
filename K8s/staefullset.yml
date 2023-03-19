@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+  namespace: ingress-nginx
+spec:
+  serviceName: "db-service"
+  selector:
+    matchLabels:
+      app: db
+  updateStrategy:
+    type: RollingUpdate
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+      - name: mysql
+        image: 540546280025.dkr.ecr.us-east-1.amazonaws.com/ecr-db
+        envFrom:
+          - configMapRef:
+             name: db-configmap
+        ports:
+          - containerPort: 3306
+        volumeMounts:
+          - name: mysql-data
+            mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-data
+    spec:
+      accessModes: [ "ReadWriteMany" ]
+      storageClassName: ""
+      resources:
+        requests:
+          storage: 1Gi

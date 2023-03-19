@@ -1,0 +1,112 @@
+- hosts: jenkins-server
+  become: yes
+  vars:
+    container_count: 4
+    default_container_name: docker
+    default_container_image: ubuntu
+    default_container_command: sleep 1
+  tasks: 
+  - name: Apt update
+    apt:
+      update_cache: yes
+  - name: Install packages
+    apt:
+      name:
+        - openjdk-11-jdk
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+        - unzip
+        - python3-pip
+  - name: Add Jenkins repository
+    apt_key:
+      url: https://pkg.jenkins.io/debian-stable/jenkins.io.key
+      state: present
+    become: yes
+  - name: Add jenkins software
+    apt_repository: repo='deb https://pkg.jenkins.io/debian-stable binary/' state=present
+    become: yes
+  - name: Install Jenkins
+    apt:
+      name:
+        - jenkins
+  - name: Start Jenkins
+    service:
+      name: jenkins
+      state: started
+      enabled: yes
+
+# create jenkins user and debug pass
+
+  - name: JENKINS-PASSTOKEN | Get initial authentication token
+    shell: 'cat /var/lib/jenkins/secrets/initialAdminPassword'
+    register: admin_auth_token
+
+  - name: Jenkins intial password
+    debug:
+      msg: "Jenkins intial password = {{admin_auth_token.stdout}}"
+
+# install docker 
+
+  - name: Install aptitude
+    apt:
+        name: aptitude
+        state: latest
+        update_cache: true
+
+  - name: Add Docker GPG apt Key
+    apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+  - name: Add Docker Repository
+    apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+  - name: Update apt and install docker-ce
+    apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
+
+  - name: Install Docker Module for Python
+    pip:
+        name: docker
+  
+# insatll kubectl  
+  - name: Apt update
+    apt:
+      update_cache: yes
+
+  - name: Execute the command in remote shell
+    ansible.builtin.shell: curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+
+  - name: Touch a file, using symbolic modes to set the permissions (equivalent to 0644)
+    ansible.builtin.shell: echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+  
+  - name: Apt update
+    apt:
+      update_cache: yes
+
+  - name: Install pachagea kubectl
+    apt:
+      name:
+        - kubectl
+
+#insatll aws cli
+  - name: Execute the command in remote shell
+    shell: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+
+  - name: Extract awscliv2.zip
+    unarchive:
+       src: awscliv2.zip
+       dest: /home/ubuntu
+       remote_src: yes
+
+
+
+
+  
+

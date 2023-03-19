@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-configmap
+  namespace: ingress-nginx
+data:
+  # property-like keys; each key maps to a simple value
+      MYSQL_DATABASE_USER: root
+      MYSQL_DATABASE_PASSWORD: root
+      MYSQL_DATABASE_DB: BucketList
+      MYSQL_DATABASE_HOST: db-service
+
+  
