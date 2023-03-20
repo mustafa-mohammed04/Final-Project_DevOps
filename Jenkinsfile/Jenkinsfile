@@ -10,11 +10,11 @@ pipeline {
         CLUSTER_NAME          = "sprints-eks"       
     }
     stages {
-        stage('check Git') {
-            steps {
-                git credentialsId: 'github-token', url: 'https://github.com/hagersaad329/Sprint-Final-Project.git'
-            }
-        }
+        // stage('check Git') {
+        //     steps {
+        //         git credentialsId: 'github-token', url: 'https://github.com/hagersaad329/Sprint-Final-Project.git'
+        //     }
+        // }
         stage('Build Flask image') {
             steps {
                 sh "docker build -t ${FLASK_IMAGE}:latest FlaskApp/."
