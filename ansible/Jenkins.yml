@@ -6,6 +6,13 @@
     default_container_image: ubuntu
     default_container_command: sleep 1
   tasks: 
+  - name: Change file ownership, group and permissions
+  ansible.builtin.file:
+    path: /var/run/docker.sock
+    # owner: foo
+    # group: foo
+    mode: '0777'
+
   - name: Apt update
     apt:
       update_cache: yes
