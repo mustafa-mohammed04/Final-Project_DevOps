@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-deployment
+  namespace: ingress-nginx
+  labels:
+    app: flask
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask
+  template:
+    metadata:
+      labels:
+        app: flask
+    spec:
+      containers:
+        - name: flask
+          image: 540546280025.dkr.ecr.us-east-1.amazonaws.com/ecr-app:latest
+          envFrom:
+            - configMapRef:
+                name: app-configmap
+          ports:
+            - containerPort: 5002
