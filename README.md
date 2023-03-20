@@ -30,6 +30,29 @@
  - ClusterIP service selects the statefulset's pod
  - Ingress using nginx-controller
 
+ ```
+aws eks --region example_region update-kubeconfig --name cluster_name
+
+```
+ ```
+ aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/y1x1a8h4
+
+```
+ ```
+docker build -t flask-app .
+
+```
+
+ ```
+docker tag flask-app:latest public.ecr.aws/y1x1a8h4/flask-app:latest
+
+```
+ ```
+docker push public.ecr.aws/y1x1a8h4/flask-app:latest
+
+```
+
+
  
  # Jenkins 
  - add credential Dashboard > Manage Jenkins > Credentials > system > Global credentials (unrestricted) + Add Credentials 
