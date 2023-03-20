@@ -1,0 +1,61 @@
+pipeline {
+    agent {
+        // Define agent details here
+    }
+    environment {
+        AWS_ACCESS_KEY_ID     = credentials('access-key')
+        AWS_SECRET_ACCESS_KEY = credentials('secret-key')
+        FLASK_IMAGE           = '540546280025.dkr.ecr.us-east-1.amazonaws.com/ecr-app'
+        MYSQL_IMAGE           = '540546280025.dkr.ecr.us-east-1.amazonaws.com/ecr-db'
+        REGISTRY_ID           = '540546280025.dkr.ecr.us-east-1.amazonaws.com'
+        REGION                = "us-east-1"
+        CLUSTER_NAME          = "sprints-eks"       
+    }
+    stages {
+        stage('check Git') {
+            steps {
+                git credentialsId: 'github-token', url: 'https://github.com/hagersaad329/Sprint-Final-Project.git'
+            }
+        }
+        stage('Build Flask image') {
+            steps {
+                sh "docker build -t ${FLASK_IMAGE}:latest FlaskApp/."
+            }
+        }
+
+        stage('Build SQL image') {
+            steps {
+                sh "docker build -t ${MYSQL_IMAGE}:latest db/."
+            }
+        }
+
+        stage('log in ECR') {
+            steps {
+                sh "aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${REGISTRY_ID}.dkr.ecr.${REGION}.amazonaws.com"
+            }
+        }
+
+        stage(' push image to ECR') {
+            steps {
+                sh "docker push ${FLASK_IMAGE}:latest"
+                sh "docker push ${MYSQL_IMAGE}:latest"
+            }
+        }
+
+        stage(' login to EKS') {
+            steps {
+                sh "aws eks --region ${REGION} update-kubeconfig --name ${CLUSTER_NAME}"
+            
+            }
+        }
+
+        stage(' Apply Kuberentes files') {
+            steps {
+                sh'kubectl apply -f k8s/pv.yml  -f k8s/db-service.yml -f k8s/ConfigMap-db.yml -f k8s/statfullset.yml'
+                sh'kubectl apply -f k8s/ConfigMap-app.yml -f k8s/app-service.yml -f k8s/deplayment.yml'
+                sh'kubectl apply -f k8s/ingress.yml'
+            
+            }
+        }
+    }
+}
