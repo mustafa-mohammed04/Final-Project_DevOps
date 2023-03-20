@@ -22,7 +22,7 @@
 # apply Kuberentes Mainfest
 
  ```
-kubectl apply -f deployment.yml 
+kubectl apply -f [all mainfest ]
 
 ```
 
