@@ -7,10 +7,18 @@
  - EKS into 2 Nodes 
  - EC2
 - 2 ECR
+- 
+```
+- terraform init
+- terraform apply
+```
  # Ansible
  - Install Jenkins
  - Configure Jenkins access
  - Install dependances (Docker , aws cli , Kubectl ,.....)
  # Jenkins 
- add credential (secert key , access key ,...)
+ - add credential Dashboard > Manage Jenkins > Credentials > system > Global credentials (unrestricted) + Add Credentials 
+ -  add (secert key , access key ,...)
+ - add Github token 
+ 
  
