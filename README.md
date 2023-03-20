@@ -29,11 +29,13 @@
  - ConfigMap for mysql variables (statefulset)
  - ClusterIP service selects the statefulset's pod
  - Ingress using nginx-controller
-
+ 
+ -log in to EKS
  ```
 aws eks --region example_region update-kubeconfig --name cluster_name
 
 ```
+-log in to ECR and push images
  ```
  aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/y1x1a8h4
 
