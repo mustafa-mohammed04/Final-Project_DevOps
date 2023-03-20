@@ -7,7 +7,6 @@
  - EKS into 2 Nodes 
  - EC2
 - 2 ECR
-- 
 ```
 - terraform init
 - terraform apply
@@ -16,6 +15,22 @@
  - Install Jenkins
  - Configure Jenkins access
  - Install dependances (Docker , aws cli , Kubectl ,.....)
+ ```
+- anible-playbook -i Inventory-name --private-key key-name playbook.yml
+
+```
+# apply Kuberentes Mainfest
+
+
+ - Deployment for flask-app image with readiness and liveness
+ - ConfigMap for flask-app variables (deployment)
+ - ClusterIP service selects the deployment's pod
+ - Statefulset for mysql image with (pv and pvs)
+ - ConfigMap for mysql variables (statefulset)
+ - ClusterIP service selects the statefulset's pod
+ - Ingress using nginx-controller
+
+ 
  # Jenkins 
  - add credential Dashboard > Manage Jenkins > Credentials > system > Global credentials (unrestricted) + Add Credentials 
  -  add (secert key , access key ,...)
