@@ -1,3 +1,7 @@
 # MySQL-and-Python
-A small web app that allow users to create account, login, and make a bucket list.
-This app is implemented using MySQL and Python. Copied from the tutorial http://code.tutsplus.com/tutorials/creating-a-web-app-from-scratch-using-python-flask-and-mysql--cms-22972
+ Flask app https://github.com/uym2/MySQL-and-Python deployed on AWS by using EKS and ECR 
+ By using terraform will create EKS , ECR , EC2 (act as Jenkins)
+ By anible will deploy jenkins installation , docker , aws cli , Kubectl ....
+ Kuberentes to trigger all files (deplyment , statefullset , confige map , vp , vpc .....)
+ #Terraform
+ 
