@@ -4,9 +4,9 @@
  By anible will deploy jenkins installation , docker , aws cli , Kubectl ....
  Kuberentes to trigger all files (deplyment , statefullset , confige map , vp , vpc .....)
  # Terraform
- - EKS into 2 Nodes 
+ - EKS 
  - EC2
-- 2 ECR
+ - ECR
 ```
 - terraform init
 - terraform apply
@@ -14,7 +14,7 @@
  # Ansible
  - Install Jenkins
  - Configure Jenkins access
- - Install dependances (Docker , aws cli , Kubectl ,.....)
+ - Install dependence (Docker , aws cli , Kubectl ,.....)
  ```
 - anible-playbook -i Inventory-name --private-key key-name playbook.yml
 
