@@ -5,13 +5,9 @@
     default_container_name: docker
     default_container_image: ubuntu
     default_container_command: sleep 1
+
+
   tasks: 
-  - name: Change file ownership, group and permissions
-  ansible.builtin.file:
-    path: /var/run/docker.sock
-    # owner: foo
-    # group: foo
-    mode: '0777'
 
   - name: Apt update
     apt:
@@ -26,18 +22,22 @@
         - software-properties-common
         - unzip
         - python3-pip
+
   - name: Add Jenkins repository
     apt_key:
       url: https://pkg.jenkins.io/debian-stable/jenkins.io.key
       state: present
     become: yes
+
   - name: Add jenkins software
     apt_repository: repo='deb https://pkg.jenkins.io/debian-stable binary/' state=present
     become: yes
+
   - name: Install Jenkins
     apt:
       name:
         - jenkins
+
   - name: Start Jenkins
     service:
       name: jenkins
@@ -46,13 +46,13 @@
 
 # create jenkins user and debug pass
 
-  - name: JENKINS-PASSTOKEN | Get initial authentication token
-    shell: 'cat /var/lib/jenkins/secrets/initialAdminPassword'
-    register: admin_auth_token
+  # - name: JENKINS-PASSTOKEN | Get initial authentication token
+  #   shell: 'cat /var/lib/jenkins/secrets/initialAdminPassword'
+  #   register: admin_auth_token
 
-  - name: Jenkins intial password
-    debug:
-      msg: "Jenkins intial password = {{admin_auth_token.stdout}}"
+  # - name: Jenkins intial password
+  #   debug:
+  #     msg: "Jenkins intial password = {{admin_auth_token.stdout}}"
 
 # install docker 
 
@@ -81,28 +81,44 @@
   - name: Install Docker Module for Python
     pip:
         name: docker
+
+  - name: Add group docker to Jenkins user
+    user:
+     name: jenkins
+     groups: docker
+     append: yes
   
+  - name: Giving Jenkins Access to docker.sock  
+    shell: setfacl --modify user:jenkins:rw /var/run/docker.sock
+
+  - name: Change file ownership, group and permissions
+    file:
+     path: /var/run/docker.sock
+     mode: '0777'
+
 # insatll kubectl  
+
   - name: Apt update
     apt:
       update_cache: yes
 
   - name: Execute the command in remote shell
-    ansible.builtin.shell: curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    shell: curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
 
   - name: Touch a file, using symbolic modes to set the permissions (equivalent to 0644)
-    ansible.builtin.shell: echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+    shell: echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
   
   - name: Apt update
     apt:
       update_cache: yes
 
-  - name: Install pachagea kubectl
+  - name: Install  kubectl
     apt:
       name:
         - kubectl
 
 #insatll aws cli
+
   - name: Execute the command in remote shell
     shell: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 
@@ -112,6 +128,8 @@
        dest: /home/ubuntu
        remote_src: yes
 
+  - name: Install AWS cli
+    shell: "./aws/install"
 
 
 

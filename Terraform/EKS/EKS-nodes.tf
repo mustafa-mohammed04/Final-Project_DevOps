@@ -1,20 +1,16 @@
 resource "aws_iam_role" "nodes_general" {
   name = "eks-node-group-general"
 
-  assume_role_policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "ec2.amazonaws.com"
-      }, 
-      "Action": "sts:AssumeRole"
+assume_role_policy = jsonencode({
+   Statement = [{
+    Action = "sts:AssumeRole"
+    Effect = "Allow"
+    Principal = {
+     Service = "ec2.amazonaws.com"
     }
-  ]
-}
-POLICY
+   }]
+   Version = "2012-10-17"
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "amazon_eks_worker_node_policy_general" {
@@ -35,7 +31,7 @@ resource "aws_iam_role_policy_attachment" "amazon_ec2_container_registry_read_on
   role = aws_iam_role.nodes_general.name
 }
 
-resource "aws_eks_node_group" "nodes_general" {
+resource "aws_eks_node_group" "nodes_general_group" {
   cluster_name = aws_eks_cluster.eks.name
 
   node_group_name = "nodes-general"
@@ -43,34 +39,16 @@ resource "aws_eks_node_group" "nodes_general" {
   node_role_arn = aws_iam_role.nodes_general.arn
 
 
-  subnet_ids = [
-      "subnet-04ce55fb59e1ba269",
-      "subnet-067af9534e031aa7b"
-    ]
-
-  scaling_config {
-    desired_size = 1
-
-    max_size = 1
-
-    min_size = 1
-  }
-
-  ami_type = "AL2_x86_64"
-
-  capacity_type = "ON_DEMAND"
-
-  disk_size = 20
-
-  force_update_version = false
+  subnet_ids = [aws_default_subnet.default_az1.id,aws_default_subnet.default_az2.id]
 
   instance_types = ["t3.small"]
-
-  labels = {
-    role = "nodes-general"
+ 
+  scaling_config {
+   desired_size = 1
+   max_size   = 1
+   min_size   = 1
   }
 
-  version = "1.25"
   depends_on = [
     aws_iam_role_policy_attachment.amazon_eks_worker_node_policy_general,
     aws_iam_role_policy_attachment.amazon_eks_cni_policy_general,

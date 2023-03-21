@@ -1,22 +1,41 @@
 # Resource: aws_iam_role
+resource "aws_default_vpc" "default" {
+  tags = {
+    Name = "Default VPC"
+  }
+}
 
+resource "aws_default_subnet" "default_az1" {
+  availability_zone = "us-east-1a"
+
+  tags = {
+    Name = "Default subnet for us-east-1a"
+  }
+}
+resource "aws_default_subnet" "default_az2" {
+  availability_zone = "us-east-1b"
+
+  tags = {
+    Name = "Default subnet for us-east-1b"
+  }
+}
 resource "aws_iam_role" "eks_cluster" {
   name = "eks-cluster-1"
-
-  assume_role_policy = <<POLICY
+  path = "/"
+  assume_role_policy = <<EOF
 {
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "eks.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
+ "Version": "2012-10-17",
+ "Statement": [
+  {
+   "Effect": "Allow",
+   "Principal": {
+    "Service": "eks.amazonaws.com"
+   },
+   "Action": "sts:AssumeRole"
+  }
+ ]
 }
-POLICY
+EOF
 }
 
 resource "aws_iam_role_policy_attachment" "amazon_eks_cluster_policy" {
@@ -33,15 +52,10 @@ resource "aws_eks_cluster" "eks" {
   role_arn = aws_iam_role.eks_cluster.arn
 
   vpc_config {
-    endpoint_private_access = false
-    endpoint_public_access = true
-    subnet_ids = [
-      "subnet-04ce55fb59e1ba269",
-      "subnet-067af9534e031aa7b"
-    ]
+    subnet_ids = [aws_default_subnet.default_az1.id,aws_default_subnet.default_az2.id]
   }
 
   depends_on = [
-    aws_iam_role_policy_attachment.amazon_eks_cluster_policy
+    aws_iam_role.eks_cluster
   ]
 }
