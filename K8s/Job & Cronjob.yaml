@@ -1,0 +1,42 @@
+``` yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: anubisjob
+  namespace: default
+spec:
+  template:
+    spec:
+      containers:
+      - image: alpine:latest
+        name: anubisjob
+      restartPolicy: Never
+  backoffLimit: 4   
+
+
+
+
+```
+``` yaml
+
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: my-cronjob
+  namespace: default
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: my-container
+            image: alpine:latest
+            command:
+            - /bin/sh
+            - -c
+            - date; echo "Hello, Mustafa!"
+          restartPolicy: OnFailure
+```
