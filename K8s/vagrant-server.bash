@@ -1,6 +1,6 @@
 ## Vagrant-server
 
-``` bash
+
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -26,11 +26,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
  
 end
-```
+
 
 ## Vagrant-agent
 
-``` bash
+
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
@@ -56,4 +56,4 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
  
 end
-```
+
